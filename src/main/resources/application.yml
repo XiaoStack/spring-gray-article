@@ -1,0 +1,16 @@
+server:
+  port: 8881
+  servlet:
+    context-path: /article
+spring:
+  application:
+    name: spring-gray-article
+  cloud:
+    nacos:
+      discovery:
+        namespace: 89bdd4e0-a92c-412d-9a67-a4e4a9531d05 # ## 注册到 nacos 的指定 namespace，默认为 public "7848:7848" "8848:8848" "9848:9848" "9849:9849"
+        password: nacos
+        server-addr: 192.168.0.110:8848
+        username: nacos
+        metadata:
+          grayTag: true # 配置元数据

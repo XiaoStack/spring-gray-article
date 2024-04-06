@@ -10,5 +10,4 @@ public class SpringGrayArticleApplication {
     public static void main(String[] args) {
         SpringApplication.run(SpringGrayArticleApplication.class, args);
     }
-
 }
