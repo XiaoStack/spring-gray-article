@@ -1,11 +1,21 @@
 package com.example.springgrayarticle.controller;
 
+import com.example.springgrayarticle.common.GrayConstant;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Base64;
 
 /**
  * XXXX
@@ -21,15 +31,50 @@ public class TestController {
 
     @Resource
     private RestTemplate restTemplate;
-
     /**
      * getUser
      */
     @GetMapping(value = "getUser")
-    public String getUser() {
-        return restTemplate.getForObject("http://spring-gray-comment/comment/api/test/getUser", String.class);
+    public ResponseEntity<String> getUser(@RequestHeader(required = false) String grayTag) {
+        System.out.println("grayTag:" + grayTag);
+        // 图片文件路径
+        String imagePath = GrayConstant.GRAY_VALUE.equals(grayTag) ? "static/images/PatternOpening.jpg" : "static/images/PatternIsSmall.jpg";
+        try {
+            // 加载图片文件
+            ClassPathResource resource = new ClassPathResource(imagePath);
+            InputStream inputStream = resource.getInputStream();
+            byte[] fileContent = StreamUtils.copyToByteArray(inputStream);
+            // 将图片文件转换为 Base64 编码字符串
+            String base64String = Base64.getEncoder().encodeToString(fileContent);
+            // 打印 Base64 编码字符串
+            // System.out.println("Base64 Encoded Image:\n" + base64String);
+            ResponseEntity<String> forEntity = restTemplate.getForEntity("http://spring-gray-comment/comment/api/test/getUser", String.class);
+            // 构建 HTML 页面的内容
+            // 设置 HTTP 响应头
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_HTML);
+            // 返回包含 HTML 页面内容的 ResponseEntity
+            String content = "<!DOCTYPE html>\n" +
+                "<html lang=\"en\">\n" +
+                "<head>\n" +
+                "    <meta charset=\"UTF-8\">\n" +
+                "    <title>User Page</title>\n" +
+                "</head>\n" +
+                "<body>\n" +
+                "    <h1>Welcome to User Page</h1>\n" +
+                "    <h2>" + forEntity.getBody() + "</h2>\n" +
+                "    <!-- 显示图片，将 base64String 作为 src 属性值 -->\n" +
+                "    <img src=\"data:image/jpeg;base64," + base64String + "\" alt=\"Sample Image\">\n" +
+                "    <!-- 其他内容 -->\n" +
+                "</body>\n" +
+                "</html>";
+            return new ResponseEntity<>(content, headers, forEntity.getStatusCode());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 //        System.out.println("article-getUser");
 //        restTemplate.getForEntity("");
 //        return "article-getUser";
+        return null;
     }
 }
