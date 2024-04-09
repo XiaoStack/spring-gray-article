@@ -9,7 +9,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Collections;
 
 /**
- * XXXX
+ * RestTemplate 负载均衡配置
  *
  * @author yinyong
  * @version 1.0

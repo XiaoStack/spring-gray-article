@@ -18,7 +18,7 @@ import java.io.InputStream;
 import java.util.Base64;
 
 /**
- * XXXX
+ * 测试控制器
  *
  * @author yinyong
  * @version 1.0
@@ -32,10 +32,10 @@ public class TestController {
     @Resource
     private RestTemplate restTemplate;
     /**
-     * getUser
+     * getArticle
      */
-    @GetMapping(value = "getUser")
-    public ResponseEntity<String> getUser(@RequestHeader(required = false) String grayTag) {
+    @GetMapping("/getArticle")
+    public ResponseEntity<String> getArticle(@RequestHeader(required = false) String grayTag) {
         System.out.println("grayTag:" + grayTag);
         // 图片文件路径
         String imagePath = GrayConstant.GRAY_VALUE.equals(grayTag) ? "static/images/PatternOpening.jpg" : "static/images/PatternIsSmall.jpg";
@@ -48,7 +48,7 @@ public class TestController {
             String base64String = Base64.getEncoder().encodeToString(fileContent);
             // 打印 Base64 编码字符串
             // System.out.println("Base64 Encoded Image:\n" + base64String);
-            ResponseEntity<String> forEntity = restTemplate.getForEntity("http://spring-gray-comment/comment/api/test/getUser", String.class);
+            ResponseEntity<String> forEntity = restTemplate.getForEntity("http://spring-gray-comment/comment/api/test/getComment", String.class);
             // 构建 HTML 页面的内容
             // 设置 HTTP 响应头
             HttpHeaders headers = new HttpHeaders();
@@ -59,6 +59,13 @@ public class TestController {
                 "<head>\n" +
                 "    <meta charset=\"UTF-8\">\n" +
                 "    <title>User Page</title>\n" +
+                "    <style>\n" +
+                "        /* 设置图片的最大宽度和高度 */\n" +
+                "        img {\n" +
+                "            max-width: 440px;\n" +
+                "            max-height: 880px;\n" +
+                "        }\n" +
+                "    </style>\n" +
                 "</head>\n" +
                 "<body>\n" +
                 "    <h1>Welcome to User Page</h1>\n" +
@@ -72,9 +79,6 @@ public class TestController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-//        System.out.println("article-getUser");
-//        restTemplate.getForEntity("");
-//        return "article-getUser";
         return null;
     }
 }

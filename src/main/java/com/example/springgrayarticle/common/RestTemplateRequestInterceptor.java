@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * XXXX
+ * RestTemplate 请求拦截器
  *
  * @author yinyong
  * @version 1.0
@@ -43,6 +43,9 @@ public class RestTemplateRequestInterceptor implements ClientHttpRequestIntercep
                     GrayRequestContextHolder.setGrayTag(true);
                 }
             }
+        }
+        if (GrayRequestContextHolder.getGrayTag() == null) {
+            GrayRequestContextHolder.setGrayTag(false);
         }
         // 执行请求
         return execution.execute(httpRequest, bytes);
