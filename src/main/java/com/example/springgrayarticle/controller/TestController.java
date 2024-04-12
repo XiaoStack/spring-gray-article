@@ -1,6 +1,7 @@
 package com.example.springgrayarticle.controller;
 
 import com.example.springgrayarticle.common.GrayConstant;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -32,13 +33,21 @@ public class TestController {
     @Resource
     private RestTemplate restTemplate;
     /**
+     * 当前环境
+     */
+    @Value("${spring.cloud.nacos.discovery.metadata.grayTag:false}")
+    private String grayTagConfig;
+
+    /**
      * getArticle
      */
     @GetMapping("/getArticle")
     public ResponseEntity<String> getArticle(@RequestHeader(required = false) String grayTag) {
-        System.out.println("grayTag:" + grayTag);
+        System.out.println("header grayTag:" + grayTag);
+        String serviceName = GrayConstant.GRAY_VALUE.equals(grayTagConfig) ? "article-gray" : "article-normal";
+        System.out.println("当前环境:" + serviceName);
         // 图片文件路径
-        String imagePath = GrayConstant.GRAY_VALUE.equals(grayTag) ? "static/images/PatternOpening.jpg" : "static/images/PatternIsSmall.jpg";
+        String imagePath = GrayConstant.GRAY_VALUE.equals(grayTagConfig) ? "static/images/PatternOpening.jpg" : "static/images/PatternIsSmall.jpg";
         try {
             // 加载图片文件
             ClassPathResource resource = new ClassPathResource(imagePath);
@@ -71,6 +80,7 @@ public class TestController {
                 "    <h1>Welcome to User Page</h1>\n" +
                 "    <h2>" + forEntity.getBody() + "</h2>\n" +
                 "    <!-- 显示图片，将 base64String 作为 src 属性值 -->\n" +
+                "    <h2> 加载自服务 " + serviceName + " 的图片</h2>\n" +
                 "    <img src=\"data:image/jpeg;base64," + base64String + "\" alt=\"Sample Image\">\n" +
                 "    <!-- 其他内容 -->\n" +
                 "</body>\n" +
